@@ -167,5 +167,160 @@ ex) /sort -> sort 단어가 들어간 문구들을 하이라이트해서 확인 
 
 ### 강의 14
 #### Linux - Source download - git
-* git 프로그램 사용법 알아보기
-*
+##### git
+ * 버전 관리 시스템 중 하나
+ * git은 리눅스에서만 쓸 수 있는게 아니라, 윈도우에서도 쓸 수 있음
+ * git을 통해서 프로그램을 만들지 않는다고 할지라도, git을 아는 것이 매우 중요
+
+* github에서 대부분 오픈 소스를 관리하고 있음
+* 그래서 오픈소스로 제작된 프로그램은 10 중 9은 github라고 하는 링크가 있음
+
+##### github에 업로드 되어 있는 open source를 자신의 리눅스 컴퓨터로 다운로드 받는 방법
+* 1. 그냥 다운로드 받는다
+* 2. 버전 관리 프로그램을 IO
+*  다운로드 받는 방법이 있음
+  * clone or download 라고 하는 버튼 클릭하면 URL이 나옴
+    * 이 페이지는 기존 URL과는 다름
+    * 이 페이지는 오픈 소스 프로젝트의 소스 코드 URL임(혼동 주의)
+    * 해당 URL를 복사를 하고, git 이라는 프로그램을 통해서 해당 소스를 설치 해야함
+    * git을 실행시켜봐서 기존에 있는지 확인
+    * sudo apt-get install git 으로 설치
+    * git clone '복사한 URL 입력 ' '디렉토리'-> 해당 오픈소스를 복제한다는 의미
+      * 여기서의 복제는 지금까지 version별로 관리해왔던 모든 소스를 복제한다는 의미
+
+### 강의 15
+#### Linux - IO Redirection : output
+##### IO
+* input, output의 약자
+* redirection은 방향을 바꾼다는 뜻을 가지고 있음
+* 만약 ls -l 명령어를 이용해서 나온 list를 파일에다가 저장하고 싶으면 어떻게 할까?
+  * ls -l 의 결과를 result.log 라는 txt에 저장하고 싶을 때, '>'를 이용하자(redirection)
+  * ex) ls -l > result.log
+  * 위의 명령어를 치면 아무 결과도 나오지 않는다. 해당 log에 저장되어 있음
+  * cat result.log라고 치면 확인 가능
+
+* 화면으로 출력되는 것이 기본인데, 출력 방향을 돌려서 다른 곳에다가 저장 함  
+<b/>이를 redirection 이라고 함</b>  
+* 해당 이미지 참조**
+![img](C:/리눅스_생활코딩강좌/Linux_IO.JPG)
+* 우리가 실행시킨 Unix Process의 결과가 standard output으로 나옴
+* unix에서 어떤 프로그램이 실행되면, 그것을 processor라고 하는데, 이 processor가 출력하는 결과를 크게 2가지로 나눔
+  * 1. standard output
+  * 2. standard error : 프로그램이 어떤 오류가 있을 때, 중요한 정보이기 때문에 별도의 출력으로 보여줌
+    * ex) 유효하지 않는 명령어를 날리게 되면 error 문구를 날림
+    * ex) rm rename2.txt > result.log 라고 하면 error문구가 txt에 저장될까?  
+    결과적으로는 x. output이 redirection이 안됨
+    * '>'를 쓰는 것은 standard output을 redirection 했기 때문에 그럼
+    * 1> : standard output redirection 을 의미
+    * 2> : error output redirection 을 의미
+    * 결과적으로 rm rename2.txt 2> result.log 라고 하면 error 문구가 저장됨
+    * 두 개다 저장하는 방법은,  
+    ex) rm rename2.txt 1> result.txt 2> result.log 라고 하면 됨 !
+
+### 강의 16
+#### Linux - IO Redirection2 : input
+##### Input 에 대한 내용 설명
+~~~
+* cat
+ex) cat hello.txt
+해당 txt 내에 내용을 보여줌
+ex) cat
+아무것도 보이지 않음. 이때 hi 라고 입력하면 hi 라는 output 출력
+ctrl + d 를 눌러 나올 수 있다
+~~~
+* 하고자 하는 이야기는, cat 이라고 하는 processor는 keyboard 입력을 input으로 받아 standard output으로 출력
+* 그렇다면, input 을 redirection 해서 file로 입력 받을 수 있다!
+~~~
+ex) cat < result.txt
+cat에 result.txt를 입력으로 받겠다는 의미
+~~~
+* cat result.txt vs cat < result.txt
+  * cat result.txt는 cat 프로그램에 result.txt라는 인자를 전달 한 것(Command-line Arguments)
+  * cat < result.txt는 standard input 으로 cat에게 input을 시킨다는 의미
+~~~
+* head '보고자하는text'
+해당 text의 앞 일부분만 화면에 출력해줌
+~~~
+* 이러한 Input/output 흘러나가는 형국을 <b/>'IO Stream'</b> 이라고 함
+
+### 강의 17
+#### Linux - IO Redirection3 : append
+* '>>' 를 쓰면, 기존의 txt에 append되서 redirection 됨
+* tip : 명령 실행을 하고 싶지 않으면 ctrl + C를 누르면 됨
+* '<<' 여러개의 명령어를 하나로 합친다는 의미
+~~~
+* ls -al > dev/null
+unix에서 dev/null은 쓰레기통 같은 역할
+따라서 출력도 하고 싶지않고, 저장도 하고 싶지 않을 때 사용
+~~~
+
+### 강의 18
+#### Linux - Shell
+* Shell vs Kernel
+  * Shell : 껍데기라는 의미가 있음
+  * Kernel : 핵심, 알맹이라는 의미가 있음
+
+* Shell은 무엇이고, Kernel은 무엇인가?
+![img](C:/리눅스_생활코딩강좌/shell_kernel.JPG)
+* hardware : 컴퓨터의 기계적인 부분들. ex) SSD, CPU 등..
+* Kernel : hardware를 감싸고 있는데, 물리적인 부분을 직접적으로 제어하는, 가장 중심이 되는 core
+* Shell : 사용자가 리눅스에서 어떤 명령어를 입력하면, shell이 입력받아 다시 kernel이 이해할 수 있게끔 해석해줌  
+kernel에게 직접 명령하는 것은 굉장히 어렵기 때문에 shell을 통해서 명령함
+
+* 그렇다면 왜 kernel 과 shell을 분리한 것일까?
+  * shell이라고 하는 것은 사용자가 입력한 명령을 해석하는 프로그램.   
+  kernel과 분리하면 여러가지 shell이 생길 수가 있음. 우리가 선호하는 쉘 프로그램을 선택해서 사용 가능
+* 몇가지 종류의 서로 다른 shell을 써보면, kernel과 shell을 구분하기 좋음
+
+### 강의 19
+#### Linux - Shell 2 : bash vs zsh
+~~~
+* echo "hello"
+echo는 뒤에 들어오는 문자를 출력하는 명령어
+echo $0
+shell 중에서 구체적인 제품 중에 하나인 bash를 사용하고 있다는 의미
+~~~
+
+* bash vs zsh
+  * bash
+    * 가장 기본적으로 탑재되어 있음
+  * zsh
+    * bash가 가지고 있지 않은 추가적인 기능들을 가지고 있기 때문에 좀 더 편라하다 라는 평가를 받고 있음
+    * cd + tab키를 누르면 숨김 파일은 안보임
+    * 절대경로로 이동할 때 첫번째 알파벳을 각각 치고 tab을 누르면 자동 완성이 됨
+* 각각의 사용자들이 취향에 맞는 shell를 선택해서 접근 가능!
+* shell이 무엇인지 알게되면, 내가 원하는 shell 을 선택해서 좀 더 최적화된 환경을 구성할 수 있음
+
+### 강의 20
+#### Linux - Shell Script 1 : intro
+* 여러개의 명령어를 순차적으로 실행해서, 하나의 업무가 이루어 질 수도 있음
+* 순차적으로 실행 해야하는 각본, script를 <b/>shell script</b> 라고 함
+* 자주 실행하는 명령어들을 하나로 묶어 script로 해놓으면 편리!
+* 결과적으로 shell script를 통해 자동화된 프로세스를 처리할 수 있다!라는 결론
+
+##### 예시  
+* .log라는 모든 파일을 bak라는 파일에 모두 백업을 받아두고 싶은 경우
+  * 명령어 하나하나 실행해보기
+~~~
+touch a.log b.log c.log
+mkdir bak
+cp *.log bak (*를 표시하면 확장자가 log 하는 모든 파일을 지칭 : wildcard)
+ls -l bak
+~~~
+
+### 강의 21
+#### Linux - Shell Script 2 : example
+* 실제 예시를 직접 작성해보기
+~~~
+echo $0 -> echo 명령어를 통해 shell 확인
+** bash라는 프로그램은 어디있을까? -> ls /bin
+bin 디렉토리 밑에 있는데, unix에 기본적으로 탑재되어있는 프로그램들이 들어가 있음
+nano backup
+ #!/bin/bash
+-> 운영체제는 밑에 작성되는 코드들이 bin 밑에 있는 bash 라는 프로그램을 통해 해석되어야 한다는 사실을 말함
+
+~~~
+
+
+### 강의 22
+####
