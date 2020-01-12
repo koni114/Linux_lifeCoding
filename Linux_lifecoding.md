@@ -313,14 +313,119 @@ ls -l bak
 * 실제 예시를 직접 작성해보기
 ~~~
 echo $0 -> echo 명령어를 통해 shell 확인
-** bash라는 프로그램은 어디있을까? -> ls /bin
-bin 디렉토리 밑에 있는데, unix에 기본적으로 탑재되어있는 프로그램들이 들어가 있음
 nano backup
  #!/bin/bash
+if ! [ -d bak ] then
+      mkdir bak
+cp *.log bak
+~~~
+* bash라는 프로그램은 어디있을까? -> ls /bin
+bin 디렉토리 밑에 있는데, unix에 기본적으로 탑재되어있는 프로그램들이 들어가 있음
 -> 운영체제는 밑에 작성되는 코드들이 bin 밑에 있는 bash 라는 프로그램을 통해 해석되어야 한다는 사실을 말함
-
+* nano memo에서 해당 script를 생성시키고 저장을 한 뒤 실행 시키면 permission denied라고 나옴  
+~~~
+* chomd : 권한 변경
+chmod +x backup
+** x : excutable (실행가능한)
 ~~~
 
+### 강의 22
+#### Linux - Directory structure 1
+* 명령어 시스템에서는 디렉토리라고 하는 것이 굉장히 중요
+* 이번 시간에는 최상위 디렉토리(root) 밑에 있는 기본 디렉토리의 기능을 알아보자
+* bin
+  * User binaries
+  * bash, nano, chmod, pwd, ps, rm 등 여러가지 프로그램들이 존재
+  * 컴퓨터에서는 실행 가능한 프로그램을 줄여서 <b/>binary, bin</b> 이라고도 함
+* sbin
+  * system binaries
+  * reboot, shutdown .. 등
+  * 컴퓨터를 재부팅하거나, 시스템 관리자, root user 들이 사용하는 프로그램들이 들어가 있음  
+* etc
+  * Configuration(설정) files
+  * 여기서 말하는 설정은 어떤 프로그램이 있을 때, 그 프로그램이 동작하는 방식을 바꾸고 싶을 때 설정을 바꿈
+  * 리눅스에서 설정을 바꾸는 것은 UI에서 설정을 바꾸는 것이 아니라, file을 바꾸는 것임
+  * 만약 내가 설치한 프로그램 설정을 바꾸고 싶을 때, etc file에 있을 것이다! 라고 생각할 수 있음
+* dev
+  * Device files
+* proc
+  * process information  
+* var
+  * Variable(바뀔수 있는) Files
+  * 해당 디렉토리 밑에 있는 파일들은 프로그램이 동작하는 과정에서 error가 발생하거나, 누군가가 접속을 하면 내용이 바뀜
+  *
+* tmp
+  * Temporary files
+  * 임시 파일들. 컴퓨터가 reboot가 되면 자동으로 내용이 삭제됨
 
 ### 강의 22
-####
+#### Linux - Directory structure 2
+* home
+  * 사용자들의 디렉토리
+  * home 밑에 사용자의 파일들이 저장되는 디렉토리
+  * '~' 를 사용하면 home 위치의 디렉토리를 말함
+* lib
+  * bin, sbin의 실행을 도와주는 library file이 저장되어 있는 디렉토리
+* opt
+  *  optional add-on Applications
+  * 소프트웨어를 설치할 때, apt-get 같은 경우는 자동으로 적당한 directory에 위치하게 됨
+  * 경우에 따라서 특정 디렉토리를 지정해야 하는 경우도 있음
+  * opt 밑에 설치하는 것도 좋은 방법
+* usr
+  * User systems
+  * 해당 디렉토리 밑에는 bin, sbin, lib, local이라고 하는 디렉토리 존재
+  * usr/bin 디렉토리는 우리가 설치하는 프로그램들은 usr 밑에 설치가 되고, 기본적으로 unix 계열에 설치가 되어서 bundle 형식으로 사용자에게 제공되는 프로그램들은 bin 밑에 설치된다 라고 생각하자
+
+### 강의 23
+#### Linux - File find 1: locate, find
+* file에 대해서 좀 더 깊게 이해해보기
+* file의 2가지 용도
+  * 데이터를 보관하기 위한 용도
+  * 해야할 일에 대한 명령을 보관하고 있는 용도(실행파일)
+* file을 찾는 방법
+~~~
+* locate [찾고자하는 파일의 이름]
+ex) locate *.log
+컴퓨터에 존재하는 모든 log 파일을 출력해 줌
+locate 명령어는 디렉토리를 뒤지지 않고 DB를 뒤짐
+따라서 훨씬 더 빠르게 파일을 찾아올 수 있음
+여기서 DB를 <b/>mlocate</b> 라고 부름
+sudo updatedb 를 통해 리눅스 컴퓨터에 대한 여러가지 정보들이 update 할 수 있는데
+보통 하루에 한번씩 정기적으로 update 됨
+~~~
+~~~
+* find
+디렉토리를 뒤져서 파일을 찾음
+현재 상태를 가져올 수 있지만, 다소 느릴 수 있음
+다양한 사용법이 있기 때문에 좋음
+사용법이 굉장히 복잡하기 때문에 따로 공부를 해야함. 몇가지만 알아보자
+ex) find . -type f -name tecmint.php
+. : 현재 디렉토리에 있는 파일을 찾음
+type f : 파일의 확장자를 지정.  file을 찾는다는 의미
+ex) find . -type f name "tecmint.txt" -exec rm -f {} \;
+해당 이름의 file을 찾아 삭제해라
+{} : 앞에서 검색한 파일의 이름이 위치하게 됨
+~~~
+### 강의 24
+#### Linux - File find 2 : whereis, $PATH
+*  whereis 명령 사용방법
+~~~
+* whereis
+원하는 파일을 찾아주는데, 실행 파일을 찾아줌
+ex) whereis ls
+result : /bin/ls /usr/share/man/man1/ls.1.gz
+ls라고 하는 실행파일의 위치를 찾아줌
+/bin/ls : ls 프로그램이 해당 위치에 존재
+/usr/share/man/man1/ls.1.gz : 해당 위치에 매뉴얼이 존재
+~~~
+* whereis 메뉴얼에서, whereis locates the binary, source and manual files for the specified command names. 라고 되어 있음
+* 이 때 파일 전체를 뒤지는게 아니라, $path, $manpath 를 뒤짐
+##### PATH
+* 우리가 ls라는 명령어를 실행할 때, 해당 프로그램을 실행하는 것인데, 해당 디렉토리에 ls라는 프로그램이 없어도 실행되는 이유는 PATH라고 하는 변수 때문
+* PATH는 변수고, 변수에는 데이터가 들어가 있는데, echo $PATH 라고 치면 데이터가 보인다.
+* 데이터를 보면 :를 기준으로 연결되어 있는데, 이것들은 경로임
+* $PATH는 리눅스에서 내장되어 있는 변수임
+* 우리가 ls 명령어를 사용하면, PATH안에 담겨있는 경로에 ls가 있는지 차례대로 뒤짐
+* 해당 명령어가 발견되면 실행됨
+* PATH를 수정해서 경로를 추가한다면, 해당 경로에 있는 프로그램도 명령어만으로 호출해서 실행시킬 수 있음
+* 이런 변수를 <b/>환경변수</b> 라고 함
