@@ -202,7 +202,7 @@ ex) /sort -> sort 단어가 들어간 문구들을 하이라이트해서 확인 
 * 화면으로 출력되는 것이 기본인데, 출력 방향을 돌려서 다른 곳에다가 저장 함  
 <b/>이를 redirection 이라고 함</b>  
 * 해당 이미지 참조**
-![img](C:/리눅스_생활코딩강좌/Linux_IO.JPG)
+![img](https://github.com/koni114/Linux_lifeCoding/blob/master/Linux_IO.JPG)
 * 우리가 실행시킨 Unix Process의 결과가 standard output으로 나옴
 * unix에서 어떤 프로그램이 실행되면, 그것을 processor라고 하는데, 이 processor가 출력하는 결과를 크게 2가지로 나눔
   * 1. standard output
