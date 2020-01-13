@@ -261,7 +261,7 @@ unix에서 dev/null은 쓰레기통 같은 역할
   * Kernel : 핵심, 알맹이라는 의미가 있음
 
 * Shell은 무엇이고, Kernel은 무엇인가?
-![img](C:/리눅스_생활코딩강좌/shell_kernel.JPG)
+![img](https://github.com/koni114/Linux_lifeCoding/blob/master/shell_kernel.JPG)
 * hardware : 컴퓨터의 기계적인 부분들. ex) SSD, CPU 등..
 * Kernel : hardware를 감싸고 있는데, 물리적인 부분을 직접적으로 제어하는, 가장 중심이 되는 core
 * Shell : 사용자가 리눅스에서 어떤 명령어를 입력하면, shell이 입력받아 다시 kernel이 이해할 수 있게끔 해석해줌  
@@ -285,7 +285,7 @@ shell 중에서 구체적인 제품 중에 하나인 bash를 사용하고 있다
   * bash
     * 가장 기본적으로 탑재되어 있음
   * zsh
-    * bash가 가지고 있지 않은 추가적인 기능들을 가지고 있기 때문에 좀 더 편라하다 라는 평가를 받고 있음
+    * bash가 가지고 있지 않은 추가적인 기능들을 가지고 있기 때문에 좀 더 편리하다 라는 평가를 받고 있음
     * cd + tab키를 누르면 숨김 파일은 안보임
     * 절대경로로 이동할 때 첫번째 알파벳을 각각 치고 tab을 누르면 자동 완성이 됨
 * 각각의 사용자들이 취향에 맞는 shell를 선택해서 접근 가능!
