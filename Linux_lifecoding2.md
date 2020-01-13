@@ -5,7 +5,7 @@
   이를 프로그램이라고 함
   * 이 프로그램이 실행되면 메모리에 적재되고, 이를 CPU가 처리. 이때 메모리에 띄어져 있는 프로그램을 process라고 함  
 * Hardware에 대한 얘기를 해보자
-![img](https://github.com/koni114/Linux_lifeCoding/blob/master/processor.JPG)
+![img](C:/리눅스_생활코딩강좌/processor.JPG)
   * SSD, HDD 라고 하는 것들이 있는데, 이는 저장장지임 -> 스토리지라고 함
   * RAM 같은 것들은 memory라고 함
   * CPU는 processor라고 함
@@ -78,3 +78,208 @@ ls -alR / 1> result.txt 2> error.log &
 ~~~
 ### 강의 30
 #### Linux - daemon 1: intro
+* 항상 실행되고 있는 프로그램을 <b/>daemon 프로그램</b>이라고 말함
+* ls, mkdir, rm 이런 것들은 데몬 프로그램이 아님
+* 비유하기 : 냉장고 vs TV
+  * 냉장고 : 항상 틀어져 있어야 함. daemon 프로그램과 비슷 ex) server
+  * TV : 필요할 때만 키면 됨 ex) ls, mkdir, pwd 등
+
+### 강의 31
+#### Linux - service와 자동 실행
+* daemon 중 하나로써 web server를 설치해보자
+* 가장 대표적인 web server로는 <b/>apache tomcat</b> 이 있음
+##### web server 설치 예제
+~~~
+sudo apt-get install apache
+~~~
+* 우선적으로 apache 설치
+* apache는 etc/init.d에 설치되어 있음
+* etc directory는 daemon의 프로그램들이 설치되어 있는 디렉토리
+* 해당 프로그램을 켜고 끄는 것은 일반적인 프로그램과 다름
+~~~
+sudo service apache2 start
+~~~
+* apache2 daemon 프로그램 시작 명령어
+~~~
+ps aux | grep apache2
+~~~
+* apache2 서버 실행 확인
+~~~
+sudo service apache2 stop
+~~~
+* apache2 서버 실행 정지
+* daemon으로 실행되는 모든 프로그램은 전부 start, stop으로 키고 끌 수 있음
+* daemon들 중 일부분은 컴퓨터가 실행 될 때 자동으로 실행되어야 하는 것들이 있음
+  * ex) web server
+  * etc/r(OS에 따라 rc.d 일수도 있음)/rc0.d, rc1.d ... 등 디렉토리가 보이는데
+      * rc3.d : CLI인 경우
+      * rc5.d : GUI인 경우
+* 들어가서 ls -l을 해보면 리스트가 보임
+  * 리스트에는 우리가 설치한 apache2도 보임
+  * 제일 앞에 l 이라고 되어 있음
+  * S02apache2라는 링크가 있고, 이 링크는 오른쪽 ../init.d/apache2가 있다는 의미
+* S02apache2
+  * S : 컴퓨터가 실행될 때 자동으로 실행
+  * K : 자동으로 실행
+  * 02 : 우선 순위
+* 따라서 만약에 daemon 프로그램이 자동으로 부팅됐을 때 실행하고 싶은 경우
+/etc/rc3.d 내 해당 프로그램 링크를 걸면 됨
+
+### 강의 32
+#### Linux - Time based job shedule cron 1 : usage
+* cron에 대해서 알아보자  
+  정기적으로 명령을 실행해주는 소프트웨어
+* 우리가 하다보면 정기적으로 일을 처리해야할 필요성이 있음
+ex) 정기적으로 data를 백업한다던지.. 등
+* cron을 사용
+  * crontab -e : 사용하고자 하는 일을 정의할 수 있음
+  * m(실행되는 분의 주기 ex) 10 : 매시간 10분)
+  * h(실행되는 시간의 주기)
+  * dom(day of month, 1달 중 며칠인지)
+  * dom(요일)
+##### 메모장(nano) cron을 이용해서 log 남겨보기
+~~~
+*/1 * * * * date >> date.log
+~~~
+* 1분 단위로 date batch 등록
+~~~
+crontab -e
+~~~
+* 현재 실행되고 있는 정기 batch job을 확인 가능
+~~~
+tail -f date.log
+~~~
+* date.log file의 마지막 몇 부분만 확인
+~~~
+*/1 * * * * date >> date.log 2>&1
+~~~
+* 표준 error를 표준 출력으로 바꿈(&를 붙여주어야함)
+
+### 강의 33
+#### Linux - Time based job shedule cron 2 : example
+##### 사례설명
+* 웹을 사용하는 사용자가 어떤 작업을 수행한 후 100,000명에게 메일을 보내야 하는 process가 있다고 하자
+* 일반적인 경우 사용자는 100,000명에게 메일이 보내는 작업이 끝날때까지 기다려야 함
+* 이 때 saved라는 작업 process를 cron이 주기적으로 갱신이 됐는지 확인하면서 메일을 보내는  
+background를 만들어두면 사용자는 불편하게 기다리지 않아도 다음 process를 진행할 수 있음
+
+### 강의 34
+#### Linux - Startup script bashrc
+* shell이 실행됐을 때 특정 명령어가 자동으로 실행되게끔 하는 방법 설명
+  * shell의 startup 설정이라고 부름
+~~~
+* alias
+* alias l='ls -al'
+~~~
+* l 이라고 입력하면 ls -al 명령어가 수행됨
+##### shell 실행 시, 특정 명령어 수행 방법
+* shell 실행 시 bashrc code를 실행하도록 약속되어 있음
+* bash 문법에 따라서 작성된 코드
+* 이 소스 제일 하단에 'Hi bash'를 입력
+~~~
+bash
+~~~
+* Hi, bash가 뜨는 것을 확인 할 수 있음
+~~~
+exit
+~~~
+* 종료
+* 그 외에 할 수 있는 것들
+  * prompt 정보 형태 변경
+  * PATH 값을 변경한다던지, 이런 것들을 시작 할 때 자동으로 setting해 줄 수 있음
+
+### 강의 35
+#### Linux - Multi user 1 : intro
+* 다중 사용자
+* 각자의 ID로 사용하게 되면 trade-off 현상 발생
+  * 단점
+  시스템의 복잡도는 훨씬더 높아짐  
+  어떤 행위에 대해서 누군가가 해도 되는지   
+  하면 안되는지에 대한 권한 체크가 들어가기 때문
+* 리눅스는 기본적으로 다중 사용자의 개념이 들어가 있기 때문에 어느정도 알고 있어야 함
+
+### 강의 36
+#### Linux - Multi user 2 : id, who
+~~~
+id
+~~~
+* uid : user Id
+* gid : group Id
+* 보통 prompt 제일 앞에 나오는 문자가 일반적으로 ID에 사용됨
+~~~
+who
+~~~
+* 이 시스템에 누가 접속되어 있는지 알 수 있음
+
+### 강의 37
+#### Linux -Root user
+#####  super(root) user vs user
+* root user는 강력한 사용자, user는 일반 사용자
+* super user 라는 구체적인 사용자도 존재한다
+* 일반적으로 super user는 root 라는 이름을 가지고 있음
+* prompt에 $ 표시가 있으면 일반 user라는 의미를 내포하고 있음
+  * super user는 #으로 표기
+* ubuntu 같은 경우 일반적으로 super user가 되는 방법이 막혀있음
+~~~
+su
+~~~
+* a라고 하는 사용자에서 b라는 사용자로 변경하거나,  
+super user가 되고 싶을때 해당 명령어 사용  
+~~~
+su - root
+~~~
+* 비밀번호 물어봄
+* 항상 super user 계정일 때는 항상 조심해야함. 특히 서버인 경우 더욱더 조심해야함
+~~~
+exit
+~~~
+* 다시 이전 사용자로 변경
+##### root 사용자 rock 푸는 방법
+~~~
+sudo passwd -u root
+~~~
+* -u : unlock의 약자
+* 한번도 root 사용자를 사용하지 않은 경우, passwd를 2번 입력해야함
+*  다시 rock을 걸고 싶은 경우
+~~~
+sudo passwd -l root
+~~~
+*  root 사용자로 접속했을때, dir이 /root
+* 일반 사용자의 dir은 /home/ 에 위치
+
+### 강의 38
+#### Linux -Add user
+~~~
+sudo useradd -m duru
+~~~
+* 명령을 실행한 사람의 password 입력
+* home 밑에 duru dir 생성
+~~~
+su - duru
+sudo passwd duru
+~~~
+* passwd 입력
+~~~
+sudo pwd
+~~~
+* sudoers file에 존재하지 않는다고 나옴
+* egoing 계정에서 duru 계정을 sudo 명령을 주자
+~~~
+sudo usermod -a -G sudo duru
+~~~
+
+### 강의 39
+#### Linux - Permission 1: basic
+##### File & Directory
+* 파일과 디렉토리에 대해서 읽기, 쓰기, 실행에 대한 권한을 지정할 수 있음   
+-> Permission  
+* 다음의 출력문을 알아보자
+* -rw-rw-r-- 1 egoing egoing 0 Dec  4 23:19 perm.txt
+  * -: type. -   : 가장 기본적인 파일, d : 디렉토리, l : link 등
+  * rw-rw-r--  : access mode
+  * rw- : owner의 권한, 읽고(r) 쓸 수(w) 있다는 의미
+  * rw- : group의 권한
+  * r--  : other의  권한
+  * r : read, w : write, x : execute
+  * egoing : owner
+  * egoing : group
