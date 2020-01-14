@@ -283,3 +283,158 @@ sudo usermod -a -G sudo duru
   * r : read, w : write, x : execute
   * egoing : owner
   * egoing : group
+
+
+
+### 강의 40
+#### Linux - Permission 2 : chmod
+##### 권한을 변경하는 방법 - chmod(change mode)
+~~~
+chmod o-r perm.txt
+~~~
+* perm.txt의 other 권한의 read 를 빼고 싶은 경우 명령어
+* 해당 명령어 수행 후 소유자가 아닌 other가 수행하면 permission denied 발생
+~~~
+chmod o+r perm.txt
+~~~
+* perm.txt file에 other에 read 권한을 추가하겠다는 의미
+~~~
+chmod o+w perm.txt
+~~~
+* perm.txt file에 other가 수정할 수 있게끔 한다는 의미
+~~~
+chmod u-r perm.txt
+~~~
+* 소유자의 read 권한을 제거
+
+### 강의 41
+#### Linux - 실행의 개념과 권한 설정 - execute
+##### 실행이 무엇인가
+* x : execute, 파일에 대해서 실행가능한 파일로 할 것인지를 결정하는 요소
+##### 실습
+~~~
+nano hi-machine.sh
+~~~
+* hi-machine 이라는 shell script  생성
+~~~
+#!/bin/bash
+echo 'hi hi hi hi'
+~~~
+* script 내에 간단한 문구 넣기
+~~~
+ls -l
+~~~
+* hi-machine.sh이 생성된 것을 확인
+~~~
+./hi-machine.sh
+~~~
+* 해당 스크립트 실행하면 permission denied
+* 만약 /bin/bash hi-machine.sh 를 수행하면 정상적이게 되지만, hi-machine.sh가 있는 디렉토리에서 ./를 이용해서 실행하면 error가 발생
+* 어떤 특정 프로그램(해석기, parser)를 통해 프로그래밍 언어를 실행시키는 것은 아무런 제약은 없지만 행문을 통해서 실행하려면 e 권한을 주어야 함
+~~~
+chmod u+x hi -machine.sh
+~~~
+* 초록색으로 표기되면 실행가능하다는 것을 의미
+
+### 강의 42
+#### Linux - permission 4 : directory
+~~~
+mkdir perm
+chmod o-r perm
+ls -l perm
+~~~
+* 결과적으로 permission denied 발생
+* 해당 디렉토리의 권한 중 write 권한이 없으면, 내부에 새로운 file 생성이 안됨
+* file의 이름 변경도 안됨
+* 실행권한은 cd 와 같은 명령어를 통해 들어갈 수 있느냐 없느냐와 관련이 있음
+~~~
+chmod -R o+w perm
+~~~
+* 디렉토리 밑에 있는 모든 file의 권한 변경 원하는 경우
+* R : recursive의 의미
+
+### 강의 42
+#### Linux - group 1 : intro
+* 사용자가 아닌 특정 사용자에게 권한을 주고 싶을 수 있음
+* 권한을 주고 싶은 사람에게 group으로 묶는다
+* Group : developer, designer 등 이름을 주고 , file에 group을 부여함
+* group은 중요하지 않음. linux는 다중 사용자이기 때문에 group 개념이 있지만 자주 사용되지 않음
+##### 실습
+* 그룹에 속한 사람들은 특정 파일을 수정할 수 있도록 하고, 아닌 사람들은 못하게 하는 실습해보자
+* group을 developer 로 지정하도록 해보자
+~~~
+cd var
+mkdir developer
+sudo echo 'hi, egoing' > egoing.txt (denied)
+~~~
+* 개발자들이 사용하는 디렉토리를 생성하려고 하면 denied
+why? 현재 디렉토리 권한은 root에게 있기 때문
+~~~
+sudo mkdir developer
+cd developer/
+~~~
+* file 생성시 root 권한이 필요한데, root라고 잡혀있는 group을 변경해보자
+~~~
+groupadd developer(denied)
+sudo !!
+~~~
+* !! : 직전에 명령했던 명령어를 지칭함
+~~~
+nano etc/group
+~~~
+* 해당 script 내 developer가 추가되었음을 확인
+~~~
+usermod -a -G developer egoing
+sudo !!
+sudo -a -G developer k8820
+~~~
+* usermod(modify) : 사용자를 수정
+* a(append) : 추가한다는 의미
+* G(group) : group
+~~~
+cd /var/developer/
+~~~
+* group을 만들었으므로, developer로 이동
+* 해당 dir의 권한을 보면 root 권한을 가지고 있음
+~~~
+sudo chown root:developer .
+~~~
+* chown : change file owner and  group
+* 현재 디렉토리의 소유자가 developer로 바뀐 것을 확인 가능
+~~~
+sudo chomd g+w .
+echo 'hi,egoing' > egoing.txt
+~~~
+### 강의 43
+#### Linux - internet 1
+* 주소창에 입력하는 주소 -> domain name이라고 함  
+이 때 IP address를 통해서도 접속이 가능
+~~~
+ping google.com
+~~~
+* google.com 의 IP address를 알 수 있음
+* 즉 구글에 접속하기 위해선 2가지 방법 모두 사용가능
+* DNS Server : domain name이 어떤 ip와 mapping되어 있는지 저장되어 있는 거대한 server
+* 즉, 우리가 google.com 이라고 치면 DNS Server에 접속해 ip address를 응답받고 이를 호출
+
+### 강의 44
+#### Linux - internet 2
+* 특정 컴퓨터를 서버로 사용하곳 싶다면 우선적으로 자신의 ip를 알아야 함
+~~~
+* ip
+ip addr
+~~~
+*  inet의 문자가 있는 부분을 찾아보면 자신의 ip addr를 알 수 있음
+* ipinfo.io 에 접속하면 우리의 ip addr를 알려줌
+~~~
+* curl
+curl ipinfo.io/ip
+~~~
+* shell 환경에서 ip addr를 아는 방법 -> curl 명령어 이용
+* ip addr 과, curl 의 결과가 다를 수 있음
+  * ip addr은 컴퓨터가 실질적으로 가지고 있는 ip가 무엇인지 알아내는 방법
+  * curl : 온라인 서비스 입장에서 접속된 결과적인 ip가 무엇인지 알아내는 방법
+  * 즉 다를 수도 있고 같을 수도 있음
+  * 같다면, 내부와 외부 접속 ip가 서로 같다는 의미
+  * 많은 경우에 두 가지가 다르다
+*   public address / private address
