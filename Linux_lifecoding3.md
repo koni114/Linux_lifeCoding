@@ -33,7 +33,7 @@ sudo htop
 * shell에서 web browing을 할 수 있는 것들이 여러가지가 있는데 그 중 elinks 를 직접 설치해보자
 ~~~
 sudo apt-get install elinks
-elinks
+elinks -
 ~~~
 * URL를 물어보는 화면이 나옴
 * google.com 이라고 치면 창 하나가 나오는데, web browsing이 가능하다는 것을 확인
